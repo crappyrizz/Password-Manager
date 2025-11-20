@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Password Manager Demo</title>
+  <style>
+    :root {
+      --bg: #050816;
+      --bg-elevated: #0f172a;
+      --accent: #3b82f6;
+      --accent-soft: rgba(59,130,246,0.15);
+      --accent-strong: #2563eb;
+      --text: #e5e7eb;
+      --text-muted: #9ca3af;
+      --border-subtle: #1f2937;
+      --danger: #ef4444;
+      --success: #22c55e;
+      --radius: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #1d2951 0, #050816 45%, #000 100%);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 32px 16px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 960px;
+      background: linear-gradient(135deg, rgba(15,23,42,0.98), rgba(15,23,42,0.92));
+      border-radius: 18px;
+      border: 1px solid rgba(148,163,184,0.2);
+      box-shadow:
+        0 30px 80px rgba(15,23,42,0.9),
+        0 0 0 1px rgba(15,23,42,0.8);
+      padding: 24px 24px 18px;
+      backdrop-filter: blur(14px);
+    }
+
+    .app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      gap: 16px;
+    }
+
+    .title-block h1 {
+      margin: 0;
+      font-size: 1.5rem;
+      letter-spacing: 0.04em;
+    }
+
+    .title-block p {
+      margin: 4px 0 0;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .pill {
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.35);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-muted);
+    }
+
+    .pill-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 12px rgba(34,197,94,0.8);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(0, 1.4fr);
+      gap: 20px;
+    }
+
+    .card {
+      background: radial-gradient(circle at top left, rgba(37,99,235,0.08), transparent 65%),
+                  radial-gradient(circle at bottom right, rgba(16,185,129,0.04), transparent 55%),
+                  var(--bg-elevated);
+      border-radius: var(--radius);
+      border: 1px solid var(--border-subtle);
+      padding: 14px 14px 10px;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 10px;
+    }
+
+    .card-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    .card-subtitle {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    fieldset {
+      border: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .field {
+      margin-top: 8px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    input {
+      width: 100%;
+      padding: 7px 10px;
+      background: rgba(15,23,42,0.95);
+      border-radius: 8px;
+      border: 1px solid rgba(148,163,184,0.4);
+      color: var(--text);
+      font-size: 0.85rem;
+      outline: none;
+      transition: border-color 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+    }
+
+    input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(59,130,246,0.45);
+      background: rgba(15,23,42,0.98);
+    }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      background: rgba(15,23,42,0.9);
+      color: var(--text);
+      border: 1px solid rgba(148,163,184,0.5);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.12s ease, border-color 0.12s ease;
+    }
+
+    button.primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+      border-color: transparent;
+      color: white;
+      box-shadow: 0 8px 24px rgba(37,99,235,0.45);
+    }
+
+    button.secondary {
+      background: rgba(15,23,42,0.95);
+    }
+
+    button.danger {
+      border-color: rgba(248,113,113,0.6);
+      color: #fecaca;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(15,23,42,0.75);
+    }
+
+    button:active {
+      transform: translateY(0);
+      box-shadow: none;
+    }
+
+    .status-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 6px;
+      gap: 10px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .badge {
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(15,23,42,0.9);
+      border: 1px solid rgba(148,163,184,0.4);
+      font-size: 0.7rem;
+    }
+
+    .badge.success {
+      border-color: rgba(34,197,94,0.7);
+      color: #bbf7d0;
+    }
+
+    .badge.error {
+      border-color: rgba(239,68,68,0.7);
+      color: #fecaca;
+    }
+
+    .badge.neutral {
+      border-color: rgba(148,163,184,0.6);
+    }
+
+    .log-card {
+      margin-top: 10px;
+    }
+
+    #log {
+      white-space: pre-wrap;
+      background: radial-gradient(circle at top, #020617, #020617 50%, #000 100%);
+      color: #e5e7eb;
+      padding: 10px;
+      min-height: 140px;
+      max-height: 260px;
+      border-radius: 10px;
+      font-family: "JetBrains Mono", "Fira Code", monospace;
+      font-size: 0.75rem;
+      overflow-y: auto;
+      border: 1px solid rgba(30,64,175,0.6);
+      box-shadow: inset 0 0 0 1px rgba(15,23,42,0.9);
+    }
+
+    .log-line.info { color: #e5e7eb; }
+    .log-line.ok { color: #bbf7d0; }
+    .log-line.err { color: #fecaca; }
+
+    @media (max-width: 800px) {
+      .app {
+        padding: 18px 14px 12px;
+      }
+      .grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="app-header">
+      <div class="title-block">
+        <h1>Secure Password Manager</h1>
+        <p>PBKDF2 + AES-GCM + HMAC demo UI (project backend underneath).</p>
+      </div>
+      <div class="pill">
+        <span class="pill-dot"></span>
+        <span>Local demo</span>
+      </div>
+    </div>
+
+    <div class="grid">
+      <!-- Left side: forms -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Master Password & Records</div>
+            <div class="card-subtitle">Manage keychain lifecycle</div>
+          </div>
+        </div>
+
+        <fieldset>
+          <div class="field">
+            <label>Master password</label>
+            <input type="password" id="masterPassword" placeholder="Choose a strong master password">
+          </div>
+          <div class="btn-row">
+            <button id="btnInit" class="primary">
+              🔐 Init New Keychain
+            </button>
+            <button id="btnLoad" class="secondary">
+              🔄 Load From Dump
+            </button>
+            <button id="btnDump" class="secondary">
+              💾 Dump & Save In Memory
+            </button>
+          </div>
+        </fieldset>
+
+        <hr style="border: none; border-top: 1px solid rgba(15,23,42,0.9); margin: 16px 0 10px;">
+
+        <fieldset>
+          <div class="card-header">
+            <div>
+              <div class="card-title">Store Password</div>
+              <div class="card-subtitle">Encrypted per-domain with AES-GCM</div>
+            </div>
+          </div>
+          <div class="field">
+            <label>Domain</label>
+            <input type="text" id="domainSet" placeholder=>
+          </div>
+          <div class="field">
+            <label>Password</label>
+            <input type="text" id="passwordSet" placeholder=>
+          </div>
+          <div class="btn-row">
+            <button id="btnSet" class="primary">
+              ➕ Save / Update
+            </button>
+          </div>
+        </fieldset>
+
+        <hr style="border: none; border-top: 1px solid rgba(15,23,42,0.9); margin: 16px 0 10px;">
+
+        <fieldset>
+          <div class="card-header">
+            <div>
+              <div class="card-title">Retrieve or Remove</div>
+              <div class="card-subtitle">Look up by domain name</div>
+            </div>
+          </div>
+          <div class="field">
+            <label>Domain</label>
+            <input type="text" id="domainGet" placeholder=>
+          </div>
+          <div class="btn-row">
+            <button id="btnGet" class="secondary">
+              🔎 Get Password
+            </button>
+            <button id="btnRemove" class="danger">
+              🗑 Remove
+            </button>
+          </div>
+        </fieldset>
+
+        <div class="status-bar">
+          <div>
+            <span class="badge neutral" id="badgeKeychain">Keychain: Not initialized</span>
+          </div>
+          <div>
+            <span class="badge neutral" id="badgeDump">Dump: None</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right side: log -->
+      <div class="card log-card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Event Log</div>
+            <div class="card-subtitle">What your password manager is doing</div>
+          </div>
+        </div>
+        <div id="log"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
