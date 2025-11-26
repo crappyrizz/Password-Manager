@@ -94,6 +94,16 @@ app.post("/api/dump", async (req, res) => {
   }
 });
 
+// POST /api/reset-session  {}
+// Called on page load/refresh to clear any unlocked keychain from memory.
+// We keep dumpRepr + dumpChecksum so user can load from dump later.
+app.post("/api/reset-session", (req, res) => {
+  keychain = null;
+  return res.json({ ok: true, message: "Keychain cleared from memory (vault locked)." });
+});
+
+
+
 // POST /api/load  { password }
 app.post("/api/load", async (req, res) => {
   const { password } = req.body;

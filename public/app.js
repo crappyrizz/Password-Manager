@@ -31,6 +31,17 @@ async function postJSON(url, obj) {
 window.addEventListener("DOMContentLoaded", () => {
   const masterPasswordInput = document.getElementById("masterPassword");
 
+  // 🔹 NEW: tell server to lock/clear any in-memory keychain on page load
+  (async () => {
+    try {
+      await postJSON("/api/reset-session", {});
+      appendLog("[Session] Vault locked on page load.", "info");
+    } catch (e) {
+      // If server not started yet, this will fail; you can ignore or log if you want.
+      appendLog("[Session] Could not reset session: " + e.message, "err");
+    }
+  })();
+
   // Init button
   document.getElementById("btnInit").addEventListener("click", async () => {
     const pw = masterPasswordInput.value;
